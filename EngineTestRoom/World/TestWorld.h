@@ -11,9 +11,10 @@ class TestWorld : public UWorld
 public:
     void OnInitialized() override;
     
+    void Tick(float deltaTime) override;
+    
 private:
     std::shared_ptr<PlayerActor> playerActor;   
     std::shared_ptr<CubeActor> cube1;
     std::shared_ptr<CubeActor> cube2;
-    std::shared_ptr<CubeActor> cube3;
 };

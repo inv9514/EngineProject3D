@@ -10,7 +10,6 @@ class ENGINE_API USceneComponent : public UActorComponent
 
 public:
     USceneComponent() = default;
-    USceneComponent(const Vector3& relativeLocation);
     virtual ~USceneComponent() = default;
     
 public:

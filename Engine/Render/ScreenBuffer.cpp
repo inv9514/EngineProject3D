@@ -14,8 +14,41 @@ ScreenBuffer::ScreenBuffer(const RenderPosition& screenSize)
 	nullptr                                // 예약값
 	);
 
+
+
 	assert(buffer != INVALID_HANDLE_VALUE);
 
+	/* 해상도와 관련없는 콘솔크기 설정 */
+	COORD maxWindowSize = GetLargestConsoleWindowSize(buffer);
+
+	std::cout << "Requested Window : " << size.x << " x " << size.y << '\n';
+	std::cout << "Maximum Window   : " << maxWindowSize.X << " x " << maxWindowSize.Y << '\n';
+
+	assert(size.x <= maxWindowSize.X && size.y <= maxWindowSize.Y);
+
+	// Buffer 크기를 자유롭게 변경할 수 있도록 Window를 먼저 작게 축소
+	SMALL_RECT tempRect = { 0, 0, 1, 1 };
+
+	BOOL result = SetConsoleWindowInfo(buffer, TRUE, &tempRect);
+	assert(result == TRUE);
+
+	// 원하는 Screen Buffer 크기로 변경
+	result = SetConsoleScreenBufferSize(buffer, size);
+	assert(result == TRUE);
+
+	// 원하는 Window 크기로 변경
+	SMALL_RECT rect = {};
+	rect.Top = 0;
+	rect.Left = 0;
+	rect.Right = static_cast<short>(size.x - 1);
+	rect.Bottom = static_cast<short>(size.y - 1);
+
+	result = SetConsoleWindowInfo(buffer, TRUE, &rect);
+	assert(result == TRUE);
+
+
+
+	/* 레거시 코드 
 	// 콘솔 크기 설정 : 콘솔은 문자열+\n 개행이 아니라 실제로 가로*세로 사각형 구조를 사용해 RECT가 필요
 	SMALL_RECT rect = {};
 	rect.Top = 0;
@@ -30,6 +63,10 @@ ScreenBuffer::ScreenBuffer(const RenderPosition& screenSize)
 	// 화면 버퍼 크기 설정(창 내부에서 글자들의 한계영역 크기)
 	result = SetConsoleScreenBufferSize(buffer, size);         
 	assert(result == TRUE);
+	*/
+
+
+
 
 	// 콘솔 커서정보 받아오고 커서 숨김 설정 
 	CONSOLE_CURSOR_INFO info;

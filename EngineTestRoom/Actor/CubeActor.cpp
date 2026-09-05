@@ -1,12 +1,12 @@
 ﻿#include "CubeActor.h"
-
 #include <Component/MeshRendererComponent.h>
-#include <Component/SceneComponent.h>   
+#include <Component/SphereComponent.h>   
 
 CubeActor::CubeActor(const Vector3& location)
 : AActor(location)
 {
-    meshRendererComponent = AddComponent<UMeshRendererComponent>();
+    meshRendererComponent = AddComponent<UMeshRendererComponent>();    
+    sphereComponent = AddComponent<USphereComponent>();
     
     SetRootComponent(meshRendererComponent);
 }
@@ -15,5 +15,10 @@ void CubeActor::Tick(float deltaTime)
 {
     AActor::Tick(deltaTime);    
     
-    //SetActorRotation(GetActorRotation() + Vector3(0,0,1));
+}
+
+void CubeActor::OnCollision(const std::shared_ptr<AActor>& other)
+{
+    AActor::OnCollision(other);
+    Destroy();
 }

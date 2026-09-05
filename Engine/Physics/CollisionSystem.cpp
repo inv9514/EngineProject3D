@@ -2,6 +2,8 @@
 #include <Actor/Actor.h>
 #include <Component/BoxComponent.h>
 
+#include "Component/SphereComponent.h"
+
 void CollisionSystem::ProcessCollision(const std::vector<std::shared_ptr<AActor>>& actorList)
 {
 	// 레벨의 actorList가 비어있다면 충돌처리 x (actorList는 Engine::Run에서 mainLevel->actorList로 의존성 주입)
@@ -53,52 +55,21 @@ void CollisionSystem::ProcessCollision(const std::vector<std::shared_ptr<AActor>
 
 bool CollisionSystem::Test(const std::shared_ptr<AActor>& left,	const std::shared_ptr<AActor>& right)
 {
+	/* 액터1, 액터2 스피어 null체크 */
 	if (!left || !right) return false;
-	
-	// 두 액터의 충돌 컴포넌트 확인
-	std::shared_ptr<UBoxComponent> leftCollision = left->GetComponent<UBoxComponent>();
-	std::shared_ptr<UBoxComponent> rightCollision = right->GetComponent<UBoxComponent>();
-	if (!leftCollision || !rightCollision) return false;
-					
-	// left 액터 충돌박스의 현재/이전 위치
-	const Vector2 leftCurrent = Vector2::Zero;
-	const Vector2 leftPrevious = Vector2::Zero;
+	const std::shared_ptr<USphereComponent> leftSphere = left->GetComponent<USphereComponent>();
+	const std::shared_ptr<USphereComponent> rightSphere = right->GetComponent<USphereComponent>();
+	if (!leftSphere || !rightSphere) return false;
+    
+	/* 액터1, 액터2 트랜스폼 Position */
+	const Vector3 leftCenter = left->GetActorLocation();
+	const Vector3 rightCenter = right->GetActorLocation();
 
-	// right 액터 충돌박스의 현재/이전 위치
-	const Vector2 rightCurrent = Vector2::Zero;
-	const Vector2 rightPrevious = Vector2::Zero;
+	/* 두 액터의 위치차이를 벡터로 표현하고, 벡터 자신을 내적해서 길이값 확보 */
+	const Vector3 distance = leftCenter - rightCenter;
+	const float distanceLength = distance.Dot(distance);   // TODO: 얘는 sqrt하면 연산을 한번 더하는대신 코드가 깔끔할듯? 일단킵
+	const float leftRightSphereRadiusSum = leftSphere->GetRadius() + rightSphere->GetRadius();
 
-	// 이전 프레임 위치와 현재 위치를 모두 포함하는 swept bounds 계산. (최악을 상정한 실제보다 긴 히트박스)
-	const float leftXMin = (leftCurrent.x < leftPrevious.x) ? leftCurrent.x : leftPrevious.x;
-	const float leftXMaxCurrent = leftCurrent.x + leftCollision->GetBoxWidth() - 1;
-	const float leftXMaxPrevious = leftPrevious.x + leftCollision->GetBoxWidth() - 1;
-	const float leftXMax = (leftXMaxCurrent > leftXMaxPrevious) ? leftXMaxCurrent : leftXMaxPrevious;
-
-	const float rightXMin = (rightCurrent.x < rightPrevious.x) ? rightCurrent.x : rightPrevious.x;
-	const float rightXMaxCurrent = rightCurrent.x + rightCollision->GetBoxWidth() - 1;
-	const float rightXMaxPrevious = rightPrevious.x + rightCollision->GetBoxWidth() - 1;
-	const float rightXMax = (rightXMaxCurrent > rightXMaxPrevious) ? rightXMaxCurrent : rightXMaxPrevious;
-
-	// X좌표 기준으로 충돌이 발생할 수 없는 상황 처리.
-	if (static_cast<int>(rightXMin) > static_cast<int>(leftXMax)) return false;    // 2번액터의 x좌표 최소치가 1번액터의 x좌표 최대치보다 오른쪽 = 떨어짐
-	if (static_cast<int>(rightXMax) < static_cast<int>(leftXMin)) return false;    // 대충 비슷함
-	
-	
-	const float leftYMin = (leftCurrent.y < leftPrevious.y) ? leftCurrent.y : leftPrevious.y;
-	const float leftYMaxCurrent = leftCurrent.y + leftCollision->GetBoxHeight() - 1.f;
-	const float leftYMaxPrevious = leftPrevious.y + leftCollision->GetBoxHeight() - 1.f;
-	const float leftYMax = (leftYMaxCurrent > leftYMaxPrevious) ? leftYMaxCurrent : leftYMaxPrevious;
-
-	const float rightYMin = (rightCurrent.y < rightPrevious.y) ? rightCurrent.y : rightPrevious.y;
-	const float rightYMaxCurrent = rightCurrent.y + rightCollision->GetBoxHeight() - 1.f;
-	const float rightYMaxPrevious = rightPrevious.y + rightCollision->GetBoxHeight() - 1.f;
-	const float rightYMax = (rightYMaxCurrent > rightYMaxPrevious) ? rightYMaxCurrent : rightYMaxPrevious;
-	
-	
-	// y좌표 기준으로 충돌이 발생할 수 없는 상황 처리.
-	if (static_cast<int>(rightYMin) > static_cast<int>(leftYMax)) return false;
-	if (static_cast<int>(rightYMax) < static_cast<int>(leftYMin)) return false;
-
-	// 충돌 발생
-	return true;
+	/* 액터 사이의 length의 제곱과 두 액터 캡슐 반지름의 합의 제곱을 비교해 충돌판정 처리 */
+	return distanceLength <= leftRightSphereRadiusSum * leftRightSphereRadiusSum;
 }

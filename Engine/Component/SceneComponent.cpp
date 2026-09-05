@@ -1,9 +1,5 @@
 ﻿#include "SceneComponent.h"
 
-USceneComponent::USceneComponent(const Vector3& relativeLocation)
-    : relativeLocation(relativeLocation)
-{
-}
 
 Matrix4 USceneComponent::GetLocalMatrix() const
 {
