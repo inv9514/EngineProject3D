@@ -12,7 +12,7 @@ public:
     virtual ~UActorComponent();
         
     virtual void BeginPlay();
-    virtual void Tick(float DeltaTime);
+    virtual void Tick(float deltaTime);
     virtual void Draw();
         
     virtual void OnCollision(const std::shared_ptr<AActor>& other);    

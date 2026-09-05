@@ -13,7 +13,7 @@ void UActorComponent::BeginPlay()
     hasBeganPlay = true;
 }
 
-void UActorComponent::Tick(float DeltaTime)
+void UActorComponent::Tick(float deltaTime)
 {
 }
 

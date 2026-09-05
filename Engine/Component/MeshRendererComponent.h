@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <Core/Core.h>
 #include "PrimitiveComponent.h"
+#include "Math/Color.h"
 #include "Shape/Mesh.h"
 
 class ENGINE_API UMeshRendererComponent : public UPrimitiveComponent
@@ -18,7 +19,11 @@ public:
     const Mesh& GetMesh() const { return mesh; }
 
     void SetMesh(const Mesh& newMesh) { mesh = newMesh; }
+    
+    void SetMeshColor(const Color& newColor) { meshColor = newColor; }
 
 private:
     Mesh mesh;
+    
+    Color meshColor = Color::White;
 };

@@ -12,7 +12,6 @@ public:
     
     inline float GetRadius() const { return sphereRadius; }
     inline void SetRadius(float radius) { sphereRadius = radius; }
-
     
 protected:
     float sphereRadius = 0.5f; 

@@ -3,8 +3,6 @@
 #include <vector>
 #include <memory>
 
-#include "Math/Vector3.h"
-
 class AActor;
 
 class CollisionSystem

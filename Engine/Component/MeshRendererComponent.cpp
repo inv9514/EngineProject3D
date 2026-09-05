@@ -11,5 +11,5 @@ void UMeshRendererComponent::Draw()
 {
     super::Draw();
 
-    Renderer3D::Get().Submit(mesh,GetWorldMatrix());
+    Renderer3D::Get().Submit(mesh,GetWorldMatrix(), meshColor);
 }

@@ -76,11 +76,12 @@ Renderer3D& Renderer3D::Get()
 }
 
 
-void Renderer3D::Submit(const Mesh& mesh, const Matrix4& worldMatrix)
+void Renderer3D::Submit(const Mesh& mesh, const Matrix4& worldMatrix, Color color)
 {
     RenderCommand3D command;
     command.mesh = &mesh;
     command.worldMatrix = worldMatrix;
+    command.color = color;
 
     renderQueue.emplace_back(command);
 }
@@ -175,7 +176,7 @@ void Renderer3D::DrawRenderQueue()
             const ScreenVertex screen2 = Project(view2);
 
             /* Rasterize */
-            DrawTriangle(screen0, screen1, screen2, GetShadeCharacter(brightness));
+            DrawTriangle(screen0, screen1, screen2, GetShadeCharacter(brightness), command.color);
         }
     }
 
@@ -208,6 +209,7 @@ void Renderer3D::DrawRenderQueue()
 
     /* 이번 프레임 RenderCommand 제거 */
     renderQueue.clear();
+    renderQueueUI.clear();
 }
 
 Renderer3D::ScreenVertex Renderer3D::Project(const Vector3& viewPosition) const
@@ -224,7 +226,7 @@ Renderer3D::ScreenVertex Renderer3D::Project(const Vector3& viewPosition) const
 }
 
 
-void Renderer3D::DrawTriangle(const ScreenVertex& v0, const ScreenVertex& v1, const ScreenVertex& v2,char character)
+void Renderer3D::DrawTriangle(const ScreenVertex& v0, const ScreenVertex& v1, const ScreenVertex& v2,char character, Color color)
 {
     /* 삼각형을 완전히 감싸는 최소 Bounding Box */
     const int minX = std::max(0, static_cast<int>(std::floor(std::min({v0.x, v1.x, v2.x}))));
@@ -254,12 +256,12 @@ void Renderer3D::DrawTriangle(const ScreenVertex& v0, const ScreenVertex& v1, co
             /* 세 Vertex의 깊이 보간으로 Depth값 생성 */
             const float inverseDepth = weight0 * v0.inverseDepth + weight1 * v1.inverseDepth + weight2 * v2.inverseDepth;
 
-            SetPixel(x, y, inverseDepth, character);
+            SetPixel(x, y, inverseDepth, character, color);
         }
     }
 }
 
-void Renderer3D::SetPixel(int x, int y, float inverseDepth, char character)
+void Renderer3D::SetPixel(int x, int y, float inverseDepth, char character, Color color)
 {
     if (x < 0 || x >= screenSize.x) return;
     if (y < 0 || y >= screenSize.y) return;
@@ -271,7 +273,7 @@ void Renderer3D::SetPixel(int x, int y, float inverseDepth, char character)
     frame->depthBuffer[index] = inverseDepth;
 
     frame->charInfoArray[index].Char.AsciiChar = character;
-    frame->charInfoArray[index].Attributes =  static_cast<DWORD>(Color::White);
+    frame->charInfoArray[index].Attributes =  static_cast<DWORD>(color);
 }
 
 

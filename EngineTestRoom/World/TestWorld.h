@@ -4,6 +4,8 @@
 #include "Actor/CubeActor.h"
 #include "Actor/PlayerActor.h"
 
+class StalkerActor;
+
 class TestWorld : public UWorld
 {
     TYPE_DECLARATIONS(TestWorld, UWorld)
@@ -15,6 +17,7 @@ public:
     
 private:
     std::shared_ptr<PlayerActor> playerActor;   
-    std::shared_ptr<CubeActor> cube1;
-    std::shared_ptr<CubeActor> cube2;
+    
+    std::shared_ptr<StalkerActor> stalker1;
+    std::shared_ptr<StalkerActor> stalker2;
 };

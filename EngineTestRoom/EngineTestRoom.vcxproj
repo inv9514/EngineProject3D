@@ -168,13 +168,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Actor\CubeActor.cpp" />
+    <ClCompile Include="Actor\PathActor.cpp" />
     <ClCompile Include="Actor\PlayerActor.cpp" />
+    <ClCompile Include="Actor\StalkerActor.cpp" />
+    <ClCompile Include="Actor\TargetActor.cpp" />
     <ClCompile Include="World\TestWorld.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor\CubeActor.h" />
+    <ClInclude Include="Actor\PathActor.h" />
     <ClInclude Include="Actor\PlayerActor.h" />
+    <ClInclude Include="Actor\StalkerActor.h" />
+    <ClInclude Include="Actor\TargetActor.h" />
     <ClInclude Include="World\TestWorld.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

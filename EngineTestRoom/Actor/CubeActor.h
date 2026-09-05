@@ -10,12 +10,10 @@ class CubeActor : public AActor
 
 public:
     CubeActor(const Vector3& location);
+    ~CubeActor();
     
-    void Tick(float deltaTime) override;
-    
-    void OnCollision(const std::shared_ptr<AActor>& other) override;
+    void Tick(float deltaTime) override;    
     
 private:
     std::shared_ptr<UMeshRendererComponent> meshRendererComponent;
-    std::shared_ptr<USphereComponent> sphereComponent;
 };

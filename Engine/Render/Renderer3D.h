@@ -42,6 +42,7 @@ private:
     {
         const Mesh* mesh = nullptr;
         Matrix4 worldMatrix;
+        Color color = Color::White;
     };
     
     /* UI 전용 렌더 커맨드 */
@@ -63,7 +64,7 @@ public:
     
 /* Draw Console */    
 public:
-    void Submit(const Mesh& mesh, const Matrix4& worldMatrix);
+    void Submit(const Mesh& mesh, const Matrix4& worldMatrix, Color color = Color::White);
     void SubmitUI(const std::string& image, const RenderPosition& position, Color color = Color::White); 
     void Draw();
 
@@ -76,11 +77,11 @@ private:
 
 /* Draw Triangle */    
 private:
-    void DrawTriangle(const ScreenVertex& v0,const ScreenVertex& v1,const ScreenVertex& v2,char character);
+    void DrawTriangle(const ScreenVertex& v0,const ScreenVertex& v1,const ScreenVertex& v2,char character, Color color);
 
     static float Edge(const ScreenVertex& start,const ScreenVertex& end,float x,float y);
     
-    void SetPixel(int x,int y,float inverseDepth,char character);    
+    void SetPixel(int x,int y,float inverseDepth,char character, Color color);    
     
     static char GetShadeCharacter(float brightness);
 
