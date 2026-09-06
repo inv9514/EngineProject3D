@@ -55,9 +55,12 @@ Renderer3D::Renderer3D(const RenderPosition& screenSize)
     screenBufferArray[0]->Clear();
     screenBufferArray[1]->Clear();
 
+    /* 창 최대화 */
     SetConsoleActiveScreenBuffer(screenBufferArray[0]->GetBuffer());
-
-    /* Projection변환 설정값 */
+    const HWND consoleWindow = GetConsoleWindow();
+    if (consoleWindow) ShowWindow(consoleWindow, SW_MAXIMIZE);
+    
+    /* Projection변환 설정값 */`
     constexpr float pi = 3.14159265359f;
     const float fieldOfView = 45.0f * pi / 180.0f;
     focalLength = (static_cast<float>(screenSize.y) * 0.5f) / std::tan(fieldOfView * 0.5f);
@@ -162,7 +165,7 @@ void Renderer3D::DrawRenderQueue()
                 
             /* Back 컬링 */
             const Vector3 viewNormal = (view1 - view0).Cross(view2 - view0).Normalized();
-            //if (viewNormal.z >= 0.0f) continue;
+            if (viewNormal.z >= 0.0f) continue;
 
             /* 광원 처리로 문자열 설정 */
             const Vector3 worldNormal = (world1 - world0).Cross(world2 - world0).Normalized();

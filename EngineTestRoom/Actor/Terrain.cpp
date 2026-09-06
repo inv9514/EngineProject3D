@@ -1,9 +1,9 @@
-﻿#include "CubeActor.h" 
+﻿#include "Terrain.h" 
 
 #include <Component/MeshRendererComponent.h>
 #include <Component/SphereComponent.h>   
 
-CubeActor::CubeActor(const Vector3& location)
+Terrain::Terrain(const Vector3& location)
     : super(location)
 {
     meshRendererComponent = AddComponent<UMeshRendererComponent>();    
@@ -12,12 +12,12 @@ CubeActor::CubeActor(const Vector3& location)
     meshRendererComponent->SetRelativeLocation(location);
 }
 
-CubeActor::~CubeActor()
+Terrain::~Terrain()
 {
     
 }
 
-void CubeActor::Tick(float deltaTime)
+void Terrain::Tick(float deltaTime)
 {
     AActor::Tick(deltaTime);        
 }

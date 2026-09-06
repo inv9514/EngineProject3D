@@ -167,20 +167,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Actor\CubeActor.cpp" />
-    <ClCompile Include="Actor\PathActor.cpp" />
-    <ClCompile Include="Actor\PlayerActor.cpp" />
-    <ClCompile Include="Actor\StalkerActor.cpp" />
-    <ClCompile Include="Actor\TargetActor.cpp" />
+    <ClCompile Include="Actor\Terrain.cpp" />
+    <ClCompile Include="Actor\Path.cpp" />
+    <ClCompile Include="Actor\Player.cpp" />
+    <ClCompile Include="Actor\Stalker.cpp" />
+    <ClCompile Include="Actor\Target.cpp" />
     <ClCompile Include="World\TestWorld.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Actor\CubeActor.h" />
-    <ClInclude Include="Actor\PathActor.h" />
-    <ClInclude Include="Actor\PlayerActor.h" />
-    <ClInclude Include="Actor\StalkerActor.h" />
-    <ClInclude Include="Actor\TargetActor.h" />
+    <ClInclude Include="Actor\Terrain.h" />
+    <ClInclude Include="Actor\Path.h" />
+    <ClInclude Include="Actor\Player.h" />
+    <ClInclude Include="Actor\Stalker.h" />
+    <ClInclude Include="Actor\Target.h" />
     <ClInclude Include="World\TestWorld.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

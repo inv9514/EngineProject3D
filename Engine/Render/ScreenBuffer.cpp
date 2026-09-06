@@ -15,6 +15,16 @@ ScreenBuffer::ScreenBuffer(const RenderPosition& screenSize)
 	);
 
 
+	/* 글자크기 설정 */
+	CONSOLE_FONT_INFOEX fontInfo{};
+	fontInfo.cbSize = sizeof(fontInfo);
+	if (GetCurrentConsoleFontEx(buffer, FALSE, &fontInfo))
+	{
+		wcscpy_s(fontInfo.FaceName, L"Consolas");
+		fontInfo.dwFontSize.X = 0;
+		fontInfo.dwFontSize.Y = 8;
+		SetCurrentConsoleFontEx(buffer, FALSE, &fontInfo);
+	}
 
 	assert(buffer != INVALID_HANDLE_VALUE);
 

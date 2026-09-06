@@ -4,13 +4,13 @@
 class USphereComponent;
 class UMeshRendererComponent;
 
-class StalkerActor : public AActor
+class Stalker : public AActor
 {
-    TYPE_DECLARATIONS(StalkerActor, AActor)
+    TYPE_DECLARATIONS(Stalker, AActor)
 
 public:
-    StalkerActor(const Vector3& location);
-    ~StalkerActor();
+    Stalker(const Vector3& location);
+    ~Stalker();
     
     void Tick(float deltaTime);   
     void OnCollision(const std::shared_ptr<AActor>& other) override;

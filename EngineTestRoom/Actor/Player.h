@@ -4,13 +4,13 @@
 
 class UCameraComponent;
 
-class PlayerActor : public AActor
+class Player : public AActor
 {
-    TYPE_DECLARATIONS(PlayerActor, AActor)
+    TYPE_DECLARATIONS(Player, AActor)
 
 public:
-    PlayerActor(const Vector3& location);
-    ~PlayerActor();
+    Player(const Vector3& location);
+    ~Player();
     
     void BeginPlay() override;
     void Tick(float deltaTime) override;

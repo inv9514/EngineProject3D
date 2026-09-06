@@ -1,4 +1,4 @@
-﻿#include "PlayerActor.h"
+﻿#include "Player.h"
 
 #include <cmath>
 #include <Component/SceneComponent.h>
@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <Input/Input.h>
 
-PlayerActor::PlayerActor(const Vector3& location)
+Player::Player(const Vector3& location)
     : super(location)
 {
     sceneComponent = AddComponent<USceneComponent>();
@@ -22,11 +22,11 @@ PlayerActor::PlayerActor(const Vector3& location)
     cameraComponent->SetTarget(Vector3::Zero);
 }
 
-PlayerActor::~PlayerActor()
+Player::~Player()
 {
 }
 
-void PlayerActor::BeginPlay()
+void Player::BeginPlay()
 {
     AActor::BeginPlay();
     
@@ -36,13 +36,13 @@ void PlayerActor::BeginPlay()
 
 }
 
-void PlayerActor::Tick(float deltaTime)
+void Player::Tick(float deltaTime)
 {
     AActor::Tick(deltaTime);
     ProcessInput(deltaTime);
 }
 
-void PlayerActor::ProcessInput(float deltaTime)
+void Player::ProcessInput(float deltaTime)
 {
     Input& input = Input::Get();
 
@@ -65,7 +65,7 @@ void PlayerActor::ProcessInput(float deltaTime)
     Look(mouseDelta.x, mouseDelta.y);
 }
 
-void PlayerActor::Move(float forwardInput, float rightInput, float verticalInput, float deltaTime)
+void Player::Move(float forwardInput, float rightInput, float verticalInput, float deltaTime)
 {
     const float inputLength = std::sqrt(forwardInput * forwardInput + rightInput * rightInput +verticalInput * verticalInput);
 
@@ -99,7 +99,7 @@ void PlayerActor::Move(float forwardInput, float rightInput, float verticalInput
     SetActorLocation(location);
 }
 
-void PlayerActor::Look(float deltaX, float deltaY)
+void Player::Look(float deltaX, float deltaY)
 {
     yaw -= deltaX * mouseSensitivity;
 

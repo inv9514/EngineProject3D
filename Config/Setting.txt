@@ -1,3 +1,3 @@
 framerate = 61
-width = 70
-height = 35
+width = 240
+height = 64

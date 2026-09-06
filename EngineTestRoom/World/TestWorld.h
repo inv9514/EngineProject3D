@@ -1,10 +1,11 @@
 ﻿#pragma once
 #include <World/World.h>
 
-#include "Actor/CubeActor.h"
-#include "Actor/PlayerActor.h"
+#include "Actor/Terrain.h"
+#include "Actor/Player.h"
 
-class StalkerActor;
+class Target;
+class Stalker;
 
 class TestWorld : public UWorld
 {
@@ -15,9 +16,13 @@ public:
     
     void Tick(float deltaTime) override;
     
-private:
-    std::shared_ptr<PlayerActor> playerActor;   
+    void CreatePreset();
     
-    std::shared_ptr<StalkerActor> stalker1;
-    std::shared_ptr<StalkerActor> stalker2;
+private:
+    std::shared_ptr<Player> playerActor;   
+    
+    std::shared_ptr<Stalker> stalker1;
+    std::shared_ptr<Stalker> stalker2;
+    
+    std::shared_ptr<Target> target;
 };
