@@ -60,7 +60,7 @@ Renderer3D::Renderer3D(const RenderPosition& screenSize)
     const HWND consoleWindow = GetConsoleWindow();
     if (consoleWindow) ShowWindow(consoleWindow, SW_MAXIMIZE);
     
-    /* Projection변환 설정값 */`
+    /* Projection변환 설정값 */
     constexpr float pi = 3.14159265359f;
     const float fieldOfView = 45.0f * pi / 180.0f;
     focalLength = (static_cast<float>(screenSize.y) * 0.5f) / std::tan(fieldOfView * 0.5f);

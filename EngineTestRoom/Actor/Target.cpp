@@ -22,7 +22,7 @@ Target::~Target()
 void Target::Tick(float deltaTime)
 {
     AActor::Tick(deltaTime);
-    SetActorRotation(GetActorRotation() + Vector3(2.f,2.f,0.f));
+    SetActorRotation(GetActorRotation() + Vector3(1.f,1.f,0.f));
 }
 
 void Target::OnCollision(const std::shared_ptr<AActor>& other)

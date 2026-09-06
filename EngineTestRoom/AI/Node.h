@@ -1,10 +1,10 @@
 ﻿#pragma once
 #include "Position.h"
 
-class Node
+class  Node
 {
 public:
-    Node(const Position& position, Node* parentNode = nullptr);
+    Node(const Position& position, Node* parentNode = nullptr)
     : position(position), parentNode(parentNode)
     {
         

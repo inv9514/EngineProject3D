@@ -3,6 +3,8 @@
 #include "Node.h"
 #include <vector>
 
+class UWorld;
+
 class AStarAlgorithm
 {
 private:
@@ -23,7 +25,7 @@ private:
 
 /* Path Finder */    
 public:
-    std::vector<Position> FindPath(const Position& startPosition, const Position& goalPosition, std::vector<std::vector<int>>& grid);  
+    std::vector<Position> FindPath(const Position& startPosition, const Position& goalPosition, std::vector<std::vector<int>>& grid, UWorld* world);  
     
 private:
 
@@ -45,9 +47,6 @@ private:
 public:
     void DisplayGridWithPath(std::vector<std::vector<int>>& grid, const std::vector<Position>& path);
 
-private:
-    void ClearVisualization(std::vector<std::vector<int>>& grid) const;
-    void DisplayGrid(const std::vector<std::vector<int>>& grid) const;
 
 private:
     std::vector<Node*> allocatedNodes;

@@ -1,10 +1,16 @@
 ﻿#include "TestWorld.h"
+
+#include <iostream>
 #include <Render/Renderer3D.h>
 #include <World/World.h>
 #include <Actor/Player.h>
 #include "Actor/Terrain.h"
 #include "Actor/Stalker.h"
 #include "Actor/Target.h"
+#include "AI/AStarAlgorithm.h"
+#include "AI/Position.h"
+#include "Actor/Visualizer.h"
+
 
 void TestWorld::OnInitialized()
 {    
@@ -23,30 +29,7 @@ void TestWorld::Tick(float deltaTime)
 }
 
 void TestWorld::CreatePreset()
-{
-    /* Map */
-    bool blocks[10][5][20] {};   
-    
-    /* 일단 바닥은 전부 생성 */
-    for (int i = 0; i < 10; i++)
-    {
-        for (int k = 0; k < 20; k++)
-        {
-            blocks[i][0][k] = true;
-        }
-    }    
-    
-    /* 바닥에 구멍좀 뚫고 */
-    blocks[3][1][8] = false;
-    blocks[4][1][9] = false;
-    blocks[8][1][2] = false;
-    blocks[3][1][5] = false;
-    
-    /* 1층 */
-    
-    /* 2층 */
-
-    
+{    
     std::vector<std::vector<int>> grid =
     {
         { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
@@ -71,17 +54,20 @@ void TestWorld::CreatePreset()
         }
     }
     
-    /*
-
-    for (int i = 0; i < 10; i++)
+    Position startPosition;
+    Position goalPosition;
+    
+    
+    AStarAlgorithm aStar;
+    
+    
+    std::vector<Position> path = aStar.FindPath(startPosition, goalPosition, grid, this);
+    if (!path.empty())
     {
-        for (int j = 0; j < 5; j++)
-        {
-            for (int k = 0; k < 20; k++)
-            {
-                if (blocks[i][j][k] == true) SpawnActor<Terrain>(Vector3(static_cast<float>(i), static_cast<float>(j), static_cast<float>(k)));
-            }
-        }
+        
     }
-    */
+    else
+    {
+        
+    }    
 }

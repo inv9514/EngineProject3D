@@ -1,11 +1,12 @@
 ﻿#define NOMINMAX
 
-#include "AStar.h"
-
+#include "AStarAlgorithm.h"
 #include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <Windows.h>
+#include <World/World.h>
+
 
 AStarAlgorithm::AStarAlgorithm()
 	: startNode(nullptr), goalNode(nullptr)
@@ -19,10 +20,8 @@ AStarAlgorithm::~AStarAlgorithm()
 
 void AStarAlgorithm::Clear()
 {
-	for (Node* node : allocatedNodes)
-	{
-		delete node;
-	}
+	/* 메모리 해제작업 */
+	for (Node* node : allocatedNodes) delete node;
 
 	allocatedNodes.clear();
 	openList.clear();
@@ -39,11 +38,14 @@ Node* AStarAlgorithm::CreateNode(const Position& position, Node* parentNode)
 	return node;
 }
 
-std::vector<Position> AStarAlgorithm::FindPath(const Position& startPosition,const Position& goalPosition,std::vector<std::vector<int>>& grid)
+std::vector<Position> AStarAlgorithm::FindPath(const Position& startPosition, const Position& goalPosition,	std::vector<std::vector<int>>& grid, UWorld* world)
 {
-	Clear();	
-	ClearVisualization(grid);
+	Clear();
 
+	// if (!IsValidGrid(grid)) return {};
+	// if (!IsInRange(startPosition.x, startPosition.y, grid) || !IsInRange(goalPosition.x, goalPosition.y, grid)) return {}; 
+	//if (grid[startPosition.y][startPosition.x] == 1 || grid[goalPosition.y][goalPosition.x] == 1) return {};
+	
 	/* 시작노드·목표노드 설정 */
 	startNode = CreateNode(startPosition);
 	goalNode = CreateNode(goalPosition);
@@ -52,7 +54,7 @@ std::vector<Position> AStarAlgorithm::FindPath(const Position& startPosition,con
 	startNode->gCost = 0.0f;
 	startNode->hCost = CalculateHeuristic(startPosition, goalPosition);
 	startNode->fCost = startNode->gCost + startNode->hCost;
-
+	
 	/* openList는 발견했지만, 아직 조사하지 않은 후보노드 목록 */
 	openList.emplace_back(startNode);
 
@@ -81,12 +83,12 @@ std::vector<Position> AStarAlgorithm::FindPath(const Position& startPosition,con
 		}
 		
 		/* 현재 currentNode는 모든 openList중 가장 fCost가 낮은 노드 */
-
-		/* COMPLETE : 목표에 도착했을 경우 함수 탈출 */
+		
+		/* COMPLETE : 목표에 도착했을 경우 최종경로만을 담은 배열반환 */
 		if (IsDestination(currentNode)) return ConstructPath(currentNode);
 
 		/* currentNode는 이제 탐색후보목록이 아닌, 이제부터 탐색을 시작하는 노드이므로 closedNode로 이동 */
-		auto iterator = std::find(openList.begin(), openList.end(), currentNode);		
+		auto iterator = std::find(openList.begin(), openList.end(), currentNode);
 		if (iterator != openList.end()) openList.erase(iterator);
 		closedList.emplace_back(currentNode);
 
@@ -97,7 +99,10 @@ std::vector<Position> AStarAlgorithm::FindPath(const Position& startPosition,con
 			int newX = currentNode->position.x + direction.x;
 			int newY = currentNode->position.y + direction.y;
 
-			/* 벽이라면 continue */
+			/* 다음위치가 범위를 벗어나거나 */
+			if (!IsInRange(newX, newY, grid)) continue;
+
+			/* 다음위치에 장애물이 있다면 continue */
 			if (grid[newY][newX] == 1) continue;
 
 			/* 장애물이 있는데 대각선이동을 시도할경우 블락 */
@@ -122,7 +127,7 @@ std::vector<Position> AStarAlgorithm::FindPath(const Position& startPosition,con
 				continue;
 			}
 
-			/* 만약 기존 openList에 없던 노드라면 새로 노드를 생성한다 */
+			/* 다음위치가 openList에 없었다면 새로 노드를 생성한다 */
 			Node* neighborNode = CreateNode(Position(newX, newY), currentNode);
 			neighborNode->gCost = newGCost;
 			neighborNode->hCost = CalculateHeuristic(neighborNode->position, goalNode->position);
@@ -132,8 +137,10 @@ std::vector<Position> AStarAlgorithm::FindPath(const Position& startPosition,con
 			openList.emplace_back(neighborNode);
 
 			/* 시각화 작업 */
-			if (grid[newY][newX] == 0) grid[newY][newX] = 5;
-			DisplayGrid(grid);
+			//if (grid[newY][newX] == 0) grid[newY][newX] = 5;
+			//DisplayGrid(grid);
+			
+			/* 월드주고 스폰액터해야함 */
 			Sleep(50);
 		}
 	}
@@ -143,7 +150,7 @@ std::vector<Position> AStarAlgorithm::FindPath(const Position& startPosition,con
 
 std::vector<Position> AStarAlgorithm::ConstructPath(Node* destinationNode)
 {
-	// 목표 노드부터 부모 노드를 따라 역추적한다.
+	/* FindPath 알고리즘이 목적지에 도달했을때, 부모를 따라가며 '최종경로'만 남긴다 */
 	std::vector<Position> path;
 	Node* currentNode = destinationNode;
 
@@ -153,158 +160,95 @@ std::vector<Position> AStarAlgorithm::ConstructPath(Node* destinationNode)
 		currentNode = currentNode->parentNode;
 	}
 
-	// 시작 위치부터 이동하도록 순서를 뒤집는다.
 	std::reverse(path.begin(), path.end());
 	return path;
 }
 
-float AStarAlgorithm::CalculateHeuristic(
-	const Position& currentPosition,
-	const Position& goalPosition) const
+float AStarAlgorithm::CalculateHeuristic(const Position& currentPosition, const Position& goalPosition) const
 {
-	// 옥타일 거리(Octaile Distance) 계산 방식을 사용.
-	// 8방향으로 이동을 허용할 때 사용 가능한 계산 방식 중 하나.
-	// 1.현재 위치에서 목표 위치까지의 차이를 가로/세로 이동 간격으로 계산한 뒤
-	// 2.대각선으로 이동이 가능한 거리는 최대한 대각선 이동 거리로 좁히고
-	// 3.직선으로만 이동 가능한 거리만 계산
-	// 4.hCost는 아래의 계산 공식으로 계산.
-	//   (대각선 이동 횟수 x 대각선 이동 비용(1.414)) + (직선 이동 횟수 x 직선 이동 비용 (1))
-
-	// 현재 위치와 목표 위치의 좌표 차이를 계산한다.
+	/* 목표위치까지의 단순 x,y 거리를 구한다 */
 	int differenceX = std::abs(currentPosition.x - goalPosition.x);
 	int differenceY = std::abs(currentPosition.y - goalPosition.y);
 
-	// 대각선 거리와 남은 직선 거리를 분리한다.
-	// 대각선으로 이동이 가능한 거리 확인을 위해 가로/세로 중 짧은 거리 구하기.
+	/* 옥타일 휴리스틱 : 일단 대각선으로 최대한 갈수있는만큼 가는 거리를 구한다 */
 	int diagonalDistance = std::min(differenceX, differenceY);
 	
-	// 직선으로만 이동 가능한 거리를 구하기 위해 가로/세로 중 긴 거리에서 대각선 이동거리 제외.
+	/* 그 다음 남은 거리는 직선이동으로 가야하는 거리를 구한다 */
 	int straightDistance = std::max(differenceX, differenceY) - diagonalDistance;
 
-	// 대각선 이동 비용.
+	/* 이동비용 설정 */
 	const float diagonalCost = 1.41421356f;
-	// 직선 이동 비용.
 	const float straightCost = 1.0f;
 
-	// (대각선 이동 횟수 x 대각선 이동 비용(1.414)) + (직선 이동 횟수 x 직선 이동 비용(1))
+	/* 최종 비용 리턴 */
 	return diagonalDistance * diagonalCost + straightDistance * straightCost;
 }
 
-bool AStarAlgorithm::IsDiagonalBlocked(const Position& currentPosition, const Direction& direction, const std::vector<std::vector<int>>& grid) const
+bool AStarAlgorithm::IsValidGrid(const std::vector<std::vector<int>>& grid) const
 {
-	// 대각선 이동이 아니면 모서리 검사가 필요하지 않다.
-	if (direction.x == 0 || direction.y == 0)
+	if (grid.empty() || grid[0].empty()) return false;
 	{
-		return false;
+		
 	}
+
+	size_t width = grid[0].size();
+	for (const std::vector<int>& row : grid)
+	{
+		if (row.size() != width)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool AStarAlgorithm::IsInRange(int x, int y, const std::vector<std::vector<int>>& grid) const
+{
+	return x >= 0 &&
+		x < static_cast<int>(grid[0].size()) &&
+		y >= 0 &&
+		y < static_cast<int>(grid.size());
+}
+
+bool AStarAlgorithm::IsDiagonalBlocked(const Position& currentPosition,	const Direction& direction,	const std::vector<std::vector<int>>& grid) const
+{
+	if (direction.x == 0 || direction.y == 0) return false;  // 직선이라면 바로 return
 
 	int sideX = currentPosition.x + direction.x;
 	int sideY = currentPosition.y + direction.y;
 
-	// 대각선 양옆 중 하나라도 장애물이면 이동을 막는다.
-	return grid[currentPosition.y][sideX] == 1 ||
-		grid[sideY][currentPosition.x] == 1;
+	return grid[currentPosition.y][sideX] == 1 || grid[sideY][currentPosition.x] == 1;  // 대각선 양옆 중 하나라도 장애물이면 이동을 막는다
 }
 
 Node* AStarAlgorithm::FindOpenNode(int x, int y) const
 {
-	/* 파라미터로 넣은 좌표와 동일한 위치의 노드를 openList에서 찾는다 */
-	for (Node* node : openList) if (node->position == Position(x, y)) return node;
+	/* 파라미터로 들어온 위치와 같은 위치를 가진 노드가 openList에 이미 있는지 체크 */
+	for (Node* node : openList)
+	{
+		if (node->position == Position(x, y)) return node;
+	}	
 	return nullptr;
 }
 
 bool AStarAlgorithm::IsInClosedList(int x, int y) const
 {
-	// 같은 좌표가 Closed 목록에 있는지 확인한다.
+	/* 파라미터로 들어온 위치와 같은 위치를 가진 노드가 closedList에 이미 있는지 체크 */
 	for (Node* node : closedList)
-	{
-		//if (node->position.x == x && node->position.y == y)
-		if (node->position == Position(x, y))
-		{
-			return true;
-		}
+	{ 
+		if (node->position == Position(x, y)) return true;
 	}
-
 	return false;
 }
 
 bool AStarAlgorithm::IsDestination(const Node* node) const
 {
-	// 현재 노드와 목표 노드의 위치를 비교한다.
-	return node != nullptr && goalNode != nullptr &&
-		node->position == goalNode->position;
+	return node != nullptr && goalNode != nullptr && node->position == goalNode->position;
 }
 
-void AStarAlgorithm::ClearVisualization(std::vector<std::vector<int>>& grid) const
+
+void AStarAlgorithm::DisplayGridWithPath(std::vector<std::vector<int>>& grid, const std::vector<Position>& path)
 {
-	// 탐색 후보 표시를 빈 공간으로 되돌린다.
-	for (std::vector<int>& row : grid)
-	{
-		for (int& value : row)
-		{
-			if (value == 5)
-			{
-				value = 0;
-			}
-		}
-	}
-}
-
-void AStarAlgorithm::DisplayGrid(const std::vector<std::vector<int>>& grid) const
-{
-	// 커서를 원점으로 이동해 같은 위치에 다시 출력한다.
-	static COORD position = { 0, 0 };
-	static HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleCursorPosition(handle, position);
-
-	int white = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
-	int green = FOREGROUND_GREEN;
-	int red = FOREGROUND_RED;
-
-	for (int y = 0; y < static_cast<int>(grid.size()); ++y)
-	{
-		for (int x = 0; x < static_cast<int>(grid[y].size()); ++x)
-		{
-			if (grid[y][x] == 2)
-			{
-				SetConsoleTextAttribute(handle, red);
-				std::cout << "S ";
-			}
-			else if (grid[y][x] == 3)
-			{
-				SetConsoleTextAttribute(handle, red);
-				std::cout << "G ";
-			}
-			else if (grid[y][x] == 1)
-			{
-				SetConsoleTextAttribute(handle, white);
-				std::cout << "1 ";
-			}
-			else if (grid[y][x] == 5)
-			{
-				SetConsoleTextAttribute(handle, green);
-				std::cout << "+ ";
-			}
-			else
-			{
-				SetConsoleTextAttribute(handle, white);
-				std::cout << "0 ";
-			}
-		}
-
-		std::cout << "\n";
-	}
-}
-
-void AStarAlgorithm::DisplayGridWithPath(
-	std::vector<std::vector<int>>& grid,
-	const std::vector<Position>& path)
-{
-	ClearVisualization(grid);
-	DisplayGrid(grid);
-
-	static HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	int green = FOREGROUND_GREEN;
 
 	for (const Position& position : path)
 	{
@@ -320,9 +264,6 @@ void AStarAlgorithm::DisplayGridWithPath(
 			static_cast<short>(position.x * 2), static_cast<short>(position.y)
 		};
 
-		SetConsoleCursorPosition(handle, consolePosition);
-		SetConsoleTextAttribute(handle, green);
-		std::cout << "* ";
 		Sleep(50);
 	}
 }

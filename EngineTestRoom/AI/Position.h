@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-class Position
+class  Position
 {
 public:
     Position(int x = 0, int y = 0)
