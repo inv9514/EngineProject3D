@@ -11,5 +11,6 @@ void UMeshRendererComponent::Draw()
 {
     super::Draw();
 
+    if (isHidden) return;
     Renderer3D::Get().Submit(mesh,GetWorldMatrix(), meshColor);
 }

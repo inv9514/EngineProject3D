@@ -2,9 +2,8 @@
 #include <iostream>
 #include <string>
 #include <Windows.h>
-#include <Core/Core.h>
 
-class ENGINE_API StatTimer
+class StatTimer
 {
 public:
     StatTimer(const std::string& tag)
@@ -42,6 +41,12 @@ public:
         LARGE_INTEGER frequency;
         QueryPerformanceFrequency(&frequency);
         return static_cast<float>(end - start) / static_cast<float>(frequency.QuadPart);
+    }
+    
+    bool IsElapsed(float seconds)
+    {
+        CheckEndStat();
+        return GetElapsed() >= seconds;
     }
 
 private:

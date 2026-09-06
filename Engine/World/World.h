@@ -63,6 +63,8 @@ public:
 public:
     inline bool HasInitialized() const { return hasInitialized; }
     
+    std::shared_ptr<ULevel> GetActiveLevel() { return persistentLevel; }
+    
 protected:
     void ProcessAddAndDestroyActors();
     

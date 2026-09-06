@@ -1,7 +1,6 @@
 ﻿#include "Player.h"
 
 #include <cmath>
-#include <Component/SceneComponent.h>
 #include <Component/CameraComponent.h>
 #include <Render/Renderer3D.h>
 #include <World/World.h>
@@ -12,13 +11,8 @@
 Player::Player(const Vector3& location)
     : super(location)
 {
-    sceneComponent = AddComponent<USceneComponent>();
-    SetRootComponent(sceneComponent);
-    
     cameraComponent = AddComponent<UCameraComponent>();
-    cameraComponent->SetAttachParent(sceneComponent);
-
-    cameraComponent->SetRelativeLocation(Vector3(0.0f, 0.0f, 0.0f));
+    SetRootComponent(cameraComponent);    
     cameraComponent->SetTarget(Vector3::Zero);
 }
 
@@ -102,11 +96,6 @@ void Player::Move(float forwardInput, float rightInput, float verticalInput, flo
 void Player::Look(float deltaX, float deltaY)
 {
     yaw -= deltaX * mouseSensitivity;
-
-    /*
-     * 화면 좌표의 y는 아래로 갈수록 커지므로
-     * 마우스를 위로 움직였을 때 위를 보도록 뺀다.
-     */
     pitch -= deltaY * mouseSensitivity;
 
     constexpr float pitchLimit = 1.5533f; // 약 89도

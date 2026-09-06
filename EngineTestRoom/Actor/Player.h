@@ -21,7 +21,6 @@ private:
     void Look(float deltaX, float deltaY);
 
 private:
-    std::shared_ptr<USceneComponent> sceneComponent;
     std::shared_ptr<UCameraComponent> cameraComponent;
     
     float yaw = 0.0f;

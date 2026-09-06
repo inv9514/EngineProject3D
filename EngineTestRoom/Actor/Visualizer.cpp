@@ -8,8 +8,16 @@ Visualizer::Visualizer(const Vector3& location)
     SetRootComponent(meshRendererComponent);
      
     meshRendererComponent->SetMeshColor(Color::BrightYellow);
+    SetActorScale(Vector3(0.5f, 0.5f, 0.5f));
+    
+    meshRendererComponent->SetIsHidden(false);
 }
 
 Visualizer::~Visualizer()
 {
+}
+
+void Visualizer::SetMeshColor(Color color)
+{
+    meshRendererComponent->SetMeshColor(color); 
 }

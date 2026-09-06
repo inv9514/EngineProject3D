@@ -21,9 +21,15 @@ public:
     void SetMesh(const Mesh& newMesh) { mesh = newMesh; }
     
     void SetMeshColor(const Color& newColor) { meshColor = newColor; }
+    
+    void SetIsHidden(bool newHidden) { isHidden = newHidden; }
+    
+    bool IsHidden() const { return isHidden; }
 
 private:
     Mesh mesh;
     
     Color meshColor = Color::White;
+    
+    bool isHidden = false;
 };

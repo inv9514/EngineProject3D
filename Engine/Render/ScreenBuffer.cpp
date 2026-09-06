@@ -22,7 +22,7 @@ ScreenBuffer::ScreenBuffer(const RenderPosition& screenSize)
 	{
 		wcscpy_s(fontInfo.FaceName, L"Consolas");
 		fontInfo.dwFontSize.X = 0;
-		fontInfo.dwFontSize.Y = 8;
+		fontInfo.dwFontSize.Y = 12;
 		SetCurrentConsoleFontEx(buffer, FALSE, &fontInfo);
 	}
 

@@ -5,8 +5,6 @@
 #include <cmath>
 #include <iostream>
 #include <Windows.h>
-#include <World/World.h>
-
 
 AStarAlgorithm::AStarAlgorithm()
 	: startNode(nullptr), goalNode(nullptr)
@@ -29,6 +27,8 @@ void AStarAlgorithm::Clear()
 
 	startNode = nullptr;
 	goalNode = nullptr;
+		
+	visualizerPositions.clear();
 }
 
 Node* AStarAlgorithm::CreateNode(const Position& position, Node* parentNode)
@@ -38,7 +38,7 @@ Node* AStarAlgorithm::CreateNode(const Position& position, Node* parentNode)
 	return node;
 }
 
-std::vector<Position> AStarAlgorithm::FindPath(const Position& startPosition, const Position& goalPosition,	std::vector<std::vector<int>>& grid, UWorld* world)
+std::vector<Position> AStarAlgorithm::FindPath(const Position& startPosition, const Position& goalPosition,	std::vector<std::vector<int>>& grid)
 {
 	Clear();
 
@@ -136,12 +136,9 @@ std::vector<Position> AStarAlgorithm::FindPath(const Position& startPosition, co
 			/* 새 노드를 openList에 추가한다 */
 			openList.emplace_back(neighborNode);
 
-			/* 시각화 작업 */
-			//if (grid[newY][newX] == 0) grid[newY][newX] = 5;
-			//DisplayGrid(grid);
-			
 			/* 월드주고 스폰액터해야함 */
-			Sleep(50);
+			openList.emplace_back(neighborNode);
+			visualizerPositions.emplace_back(neighborNode->position);		
 		}
 	}
 
@@ -246,24 +243,3 @@ bool AStarAlgorithm::IsDestination(const Node* node) const
 	return node != nullptr && goalNode != nullptr && node->position == goalNode->position;
 }
 
-
-void AStarAlgorithm::DisplayGridWithPath(std::vector<std::vector<int>>& grid, const std::vector<Position>& path)
-{
-
-	for (const Position& position : path)
-	{
-		// 시작점과 목표점은 기존 표시를 유지한다.
-		int value = grid[position.y][position.x];
-		if (value == 2 || value == 3)
-		{
-			continue;
-		}
-
-		COORD consolePosition =
-		{
-			static_cast<short>(position.x * 2), static_cast<short>(position.y)
-		};
-
-		Sleep(50);
-	}
-}
